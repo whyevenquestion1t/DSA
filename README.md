@@ -2,4 +2,4 @@
 
 ## Data Structures
 
-- [Arrays](./array)
+- [Arrays](./arrays)
