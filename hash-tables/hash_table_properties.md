@@ -30,3 +30,5 @@ In JavaScript, other than an object, we also have a Map and a Set.
 - A Map() allows you to store any data type as the key, while an object only allows strings as the key. Another benefit of using a Map() is that it maintains insertion order.
 - A Set() is very similar to a Map(), but it only stores keys.
 At the end of the day, a Map and a Set are both hash tables.
+--
+What are hash buckets?
