@@ -14,7 +14,7 @@ class HashTable {
     set(key, value) {
         const address = this._hash(key);
         this.data[address] = [key, value];
-        console.log(address)
+        console.log(this.data)
     }
 
     get(key) {
