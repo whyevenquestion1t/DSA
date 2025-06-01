@@ -3,3 +3,4 @@
 ## Data Structures
 
 - [Arrays](./arrays)
+- [Hash Tables](./hash-tables/)
