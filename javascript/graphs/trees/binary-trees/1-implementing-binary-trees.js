@@ -1,75 +1,121 @@
 class Node {
-    constructor(value) {
-        this.left = null;
-        this.right = null;
-        this.value = value;
-    }
+  constructor(value) {
+    this.left = null;
+    this.right = null;
+    this.value = value;
+  }
 }
 
 class BinarySearchTree {
-    constructor() {
-        this.root = null;
+  constructor() {
+    this.root = null;
+  }
+
+  insert(value) {
+    const newNode = new Node(value);
+    if (this.root === null) {
+      this.root = newNode;
+      return this;
     }
 
-    insert(value) {
-        if (this.root == null) {
-            this.root = new Node(value);
-        } else {
-            if (this.root.left == null) {
-                // let's create a rule where the default assignment goes to the left:
-
-                //  1. because there isn't a right value
-                //  2. the duplicate values should be assigned as new nodes to the left of the parent node
-                //  3. if the left node is not null, then we need to check the value against the left node
-                //  and make a decision whether we want to reassign the left value or add the right node
-
-                // I need a way to travel through the tree to insert new nodes
-                // that's where traversal comes in handy, traversal uses recursion to travel through the tree
-                // the traversal function should contain the logic of deciding where in the tree we should go
-                // every time we traverse, we change the parent node
-
-                // we can create a while loop that traverses through the tree and finds the right location in the tree
-
-                this.root.left = new Node(value);
-            } else {
-                // TODO: Implement proper tree traversal logic
-                // For now, just add to right if left is occupied
-                if (this.root.right == null) {
-                    this.root.right = new Node(value);
-                }
-            }
+    let currentNode = this.root;
+    while (true) {
+      if (value < currentNode.value) {
+        if (currentNode.left === null) {
+          currentNode.left = newNode;
+          return this;
         }
+        currentNode = currentNode.left;
+      } else {
+        // duplicates and ties go to the right, mirroring < on the left
+        if (currentNode.right === null) {
+          currentNode.right = newNode;
+          return this;
+        }
+        currentNode = currentNode.right;
+      }
+    }
+  }
+
+  lookup(value) {
+    let currentNode = this.root;
+    while (currentNode !== null) {
+      if (value === currentNode.value) {
+        return currentNode;
+      }
+      currentNode = value < currentNode.value ? currentNode.left : currentNode.right;
+    }
+    return null;
+  }
+
+  remove(value) {
+    this.root = this._removeNode(this.root, value);
+  }
+
+  _removeNode(node, value) {
+    if (node === null) {
+      return null;
     }
 
-    lookup(value) {
-        // TODO: Implement lookup logic
+    if (value < node.value) {
+      node.left = this._removeNode(node.left, value);
+      return node;
+    }
+    if (value > node.value) {
+      node.right = this._removeNode(node.right, value);
+      return node;
     }
 
-    remove(value) {
-        // TODO: Implement remove logic
+    // found the node to remove
+    if (node.left === null && node.right === null) {
+      return null;
     }
+    if (node.left === null) {
+      return node.right;
+    }
+    if (node.right === null) {
+      return node.left;
+    }
+
+    // two children: replace this node's value with its in-order successor
+    // (the smallest value in the right subtree), then remove that successor
+    let successor = node.right;
+    while (successor.left !== null) {
+      successor = successor.left;
+    }
+    node.value = successor.value;
+    node.right = this._removeNode(node.right, successor.value);
+    return node;
+  }
 }
 
 // Test code
 const tree = new BinarySearchTree();
 tree.insert(9);
 tree.insert(4);
-// tree.insert(6);
-// tree.insert(20);
-// tree.insert(170);
-// tree.insert(15);
-// tree.insert(1);
-// tree.remove(170);
+tree.insert(6);
+tree.insert(20);
+tree.insert(170);
+tree.insert(15);
+tree.insert(1);
 
 function traverse(node) {
-    const tree = { value: node.value };
-    tree.left = node.left === null ? null : traverse(node.left); // if the left node is equal to null, then
-    tree.right = node.right === null ? null : traverse(node.right);
-    return tree;
+  if (node === null) {
+    return null;
+  }
+  const tree = { value: node.value };
+  tree.left = traverse(node.left);
+  tree.right = traverse(node.right);
+  return tree;
 }
 
-const visualTree = JSON.stringify(traverse(tree.root));
-console.log(visualTree);
-//     9
-//  4     20
-//1  6  15  170
+console.log(JSON.stringify(traverse(tree.root)));
+//      9
+//   4     20
+// 1  6  15  170
+
+console.log(tree.lookup(15).value); // 15
+console.log(tree.lookup(999)); // null
+
+tree.remove(170);
+console.log(JSON.stringify(traverse(tree.root)));
